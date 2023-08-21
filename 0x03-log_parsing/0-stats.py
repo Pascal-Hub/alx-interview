@@ -1,38 +1,34 @@
 #!/usr/bin/python3
-'''This script reads stdin line by line and computes metrics
+''' Log parsing
 '''
 
 
 import sys
 
-cache = {'200': 0, '301': 0, '400': 0, '401': 0,
-         '403': 0, '404': 0, '405': 0, '500': 0}
-total_no_size = 0
-counter_no = 0
 
-try:
-    for line in sys.stdin:
-        line_list = line.split(" ")
-        if len(line_list) > 4:
-            code = line_list[-2]
-            size = int(line_list[-1])
-            if code in cache.keys():
-                cache[code] += 1
-            total_no_size += size
-            counter_no += 1
+def print_stats(file_size, status_codes):
+    '''Prints the stats
+    '''
+    print('File size: {:d}'.format(file_size))
+    for key, value in sorted(status_codes.items()):
+        if value:
+            print('{:s}: {:d}'.format(key, value))
 
-        if counter_no == 10:
-            counter_no = 0
-            print('File size: {}'.format(total_no_size))
-            for key, value in sorted(cache.items()):
-                if value != 0:
-                    print('{}: {}'.format(key, value))
 
-except Exception as err:
-    pass
-
-finally:
-    print('File size: {}'.format(total_no_size))
-    for key, value in sorted(cache.items()):
-        if value != 0:
-            print('{}: {}'.format(key, value))
+if __name__ == '__main__':
+    status_codes = {'200': 0, '301': 0, '400': 0, '401': 0,
+                    '403': 0, '404': 0, '405': 0, '500': 0}
+    file_size = 0
+    count = 0
+    try:
+        for line in sys.stdin:
+            count += 1
+            data = line.split()
+            file_size += int(data[-1])
+            if data[-2] in status_codes:
+                status_codes[data[-2]] += 1
+            if count % 10 == 0:
+                print_stats(file_size, status_codes)
+    except (KeyboardInterrupt, EOFError):
+        print_stats(file_size, status_codes)
+    print_stats(file_size, status_codes)
