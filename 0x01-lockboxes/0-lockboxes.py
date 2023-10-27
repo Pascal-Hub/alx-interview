@@ -1,33 +1,29 @@
 #!/usr/bin/python3
-""" Lockboxes interview coding challenge """
-
-from typing import List
+""" Defines a function that checks if boxes can be unlocked"""
 
 
-def canUnlockAll(boxes: List[list]) -> bool:
-    """ checks if the all boxes can be unlocked
+def canUnlockAll(boxes):
+    """
+    Checks if all boxes can be unlocked by iterating through
+    keys stored while visiting boxes.
 
     Args:
-        boxes (List[list]): List of boxes
+        boxes (list[list[int]]): A list of lists representing
+        the boxes and their corresponding keys.
 
     Returns:
-        bool: True if all boxes can be unlocked else fals
+        bool: True if all boxes can be unlocked, False otherwise.
     """
-    unlocked_boxes = {}
-    try:
-        empty_index = boxes.index([])
-        boxes[empty_index] = [0]
-    except Exception:
-        pass
-    box_numbers = [x for x in range(len(boxes))]
-    # print(some)
-    unlocked_boxes[0] = 'unlocked'
-    for i in range(len(boxes) - 1):
-        for k in range(len(boxes[i])):
-            if boxes[i][k] in box_numbers:
-                unlocked_boxes[boxes[i][k]] = 'unlocked'
-
-    opened = unlocked_boxes.values()
-    if len(opened) != len(boxes):
-        return False
-    return True
+    key_store = [0]
+    index = key = count = 0
+    while index < len(key_store):
+        key = key_store[index]
+        if key >= len(boxes):
+            index += 1
+            continue
+        for k in boxes[key]:
+            if k not in key_store:
+                key_store.append(k)
+        index += 1
+        count += 1
+    return count == len(boxes)
